@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Sugargoo spreadsheet | Product Links, USD Prices & QC Guide</title>
+  <meta name="description" content="Browse real CAFANS listings for shoes, hoodies, tees and jackets. Compare estimated USD prices, check sizing and QC photos, and plan your Sugargoo order.">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Sugargoo spreadsheet | Product Links & USD Prices">
+  <meta property="og:description" content="Compare CAFANS product finds and build a shortlist with sizing, QC and shipping checks.">
+  <!--
+    搜索结果参考页面包括 https://sugargo.net/、https://sugargootab.com/、
+    https://sugargoofindsx.com/ 和 https://sugargoospreads.com/browse。
+    保留分类与检索，并增加可下载的对比清单、逐件量尺提示和实付费用估算。
+    商品与美元参考价取自 https://cafans.com/ 的 Featured Product Finds。
+    尚未提交 Google 或 Bing 收录。需要先部署 index.html 并取得最终公开 URL。
+    部署后添加指向本页最终 URL 的自引用 canonical，再到已验证的
+    Google Search Console 和 Bing Webmaster Tools 使用 URL 检查请求索引。
+  -->
+  <style>
+    :root {
+      color-scheme: dark;
+      --background: #0d1914;
+      --surface: #14251c;
+      --border: #365143;
+      --text: #f2f7ed;
+      --muted: #bed0c3;
+      --accent: #d6f788;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--background);
+      color: var(--text);
+      font: 1rem/1.65 system-ui, sans-serif;
+    }
+
+    a { color: var(--accent); text-underline-offset: .2em; }
+    :focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
+    .wrap { width: min(1100px, calc(100% - 2rem)); margin-inline: auto; }
+    .topbar { border-bottom: 1px solid var(--border); }
+    .topbar .wrap, nav, .actions, .filters {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: .8rem 1.2rem;
+    }
+
+    .topbar .wrap { justify-content: space-between; padding-block: .9rem; }
+    nav a { color: var(--muted); font-size: .92rem; }
+    .hero {
+      padding: clamp(3.5rem, 9vw, 7rem) 0;
+      text-align: center;
+      background: radial-gradient(ellipse at 50% 0%, #284633, transparent 74%);
+    }
+
+    h1, h2, h3, p { margin-block: 0 .7em; }
+    h1 {
+      font-size: clamp(2.5rem, 8vw, 6rem);
+      line-height: 1;
+      letter-spacing: -.055em;
+    }
+
+    h2 { font-size: clamp(1.55rem, 4vw, 2.35rem); line-height: 1.15; }
+    h3 { font-size: 1.08rem; line-height: 1.35; }
+    p, footer, .muted { color: var(--muted); }
+    .hero p { max-width: 58ch; margin: 1.4rem auto; }
+    .hero .actions { justify-content: center; }
+    .button, button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: .55rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: .65rem;
+      background: var(--surface);
+      color: var(--text);
+      font: inherit;
+      font-weight: 650;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .primary { background: var(--accent); border-color: var(--accent); color: #18240e; }
+    section { margin-block: 0 3.5rem; scroll-margin-top: 1rem; }
+    .filters { margin-block: 1.25rem; align-items: end; }
+    .filters label { flex: 1 1 14rem; }
+    label { display: block; }
+    input, select {
+      width: 100%;
+      min-height: 44px;
+      margin-top: .3rem;
+      padding: .45rem .7rem;
+      border: 1px solid var(--border);
+      border-radius: .5rem;
+      background: var(--background);
+      color: var(--text);
+      font: inherit;
+    }
+
+    input[type="checkbox"] {
+      width: 1rem;
+      min-height: 0;
+      margin: 0 .5rem 0 0;
+      accent-color: var(--accent);
+    }
+
+    .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; }
+    .card, .panel, details {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: .85rem;
+      padding: 1rem;
+    }
+
+    .card { display: flex; flex-direction: column; }
+    .card p { flex: 1; font-size: .93rem; }
+    .card label { border-top: 1px solid var(--border); padding-top: .65rem; margin-top: .8rem; }
+    .category { color: var(--muted); font-size: .82rem; margin-bottom: .55rem; }
+    .price { color: var(--accent); display: block; margin-bottom: .5rem; }
+    .budget {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: .85rem;
+      margin-bottom: 1rem;
+    }
+
+    .shortlist { margin-top: 1rem; }
+    output { color: var(--accent); font-weight: 700; }
+    details { margin-bottom: .65rem; }
+    summary { cursor: pointer; font-weight: 650; }
+    details p { margin: .65rem 0 0; }
+    footer { border-top: 1px solid var(--border); padding-block: 1.25rem; }
+    [hidden] { display: none !important; }
+
+    @media (max-width: 820px) {
+      .grid, .budget { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 440px) {
+      .grid, .budget { grid-template-columns: 1fr; }
+    }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Sugargoo spreadsheet",
+    "inLanguage": "en",
+    "description": "A CAFANS product shortlist with estimated USD prices, sizing checks and a shipping budget worksheet.",
+    "mainEntity": {
+      "@type": "ItemList",
+      "name": "Featured CAFANS product listings",
+      "itemListElement": [
+        {"@type":"ListItem","position":1,"name":"Leather Slides","url":"https://cafans.com/goods-158791.html"},
+        {"@type":"ListItem","position":2,"name":"Sweatshirt","url":"https://cafans.com/goods-158792.html"},
+        {"@type":"ListItem","position":3,"name":"Unisex Embroidered Oversized T-Shirt","url":"https://cafans.com/goods-158200.html"},
+        {"@type":"ListItem","position":4,"name":"Corteiz Jacket","url":"https://cafans.com/goods-158279.html"}
+      ]
+    }
+  }
+  </script>
+<link rel="canonical" href="https://kakobuyfinds.github.io/nhfgh/">
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap">
+      <strong>Shopping Spreadsheet</strong>
+      <nav aria-label="Page navigation">
+        <a href="#catalog">Product catalog</a>
+        <a href="#budget">Shipping budget</a>
+        <a href="#guide">Ordering guide</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <header class="hero">
+      <div class="wrap">
+        <h1>Sugargoo spreadsheet</h1>
+        <p>Browse shoes and streetwear from CAFANS, shortlist the listings you want to compare, and estimate what your order could cost after shipping.</p>
+        <div class="actions">
+          <a class="button primary" href="https://cafans.com">Sugargoo spreadsheet</a>
+          <a class="button" href="https://cafans.com">Buy it now</a>
+        </div>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <section id="catalog" aria-labelledby="catalog-title">
+        <h2 id="catalog-title">CAFANS product catalog</h2>
+        <p>Featured listings from CAFANS. The USD prices below are estimates from the catalog snapshot. Open the listing to check its current price and available options.</p>
+
+        <div id="filters" class="filters" hidden>
+          <label>Search products
+            <input id="query" type="search" placeholder="Try slides or oversized">
+          </label>
+          <label>Category
+            <select id="category">
+              <option value="">All categories</option>
+              <option>Shoes</option>
+              <option>Hoodies &amp; sweaters</option>
+              <option>T-shirts</option>
+              <option>Jackets</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="grid" id="products">
+          <article class="card" data-category="Shoes" data-price="62.36">
+            <div class="category">Shoes</div>
+            <h3><a href="https://cafans.com/goods-158791.html">Leather Slides</a></h3>
+            <strong class="price">$62.36 USD est.</strong>
+            <p>Compare the size chart with your foot length and confirm which measurement the seller uses.</p>
+            <label hidden><input type="checkbox" aria-label="Shortlist Leather Slides">Shortlist</label>
+          </article>
+
+          <article class="card" data-category="Hoodies &amp; sweaters" data-price="27.50">
+            <div class="category">Hoodies &amp; sweaters</div>
+            <h3><a href="https://cafans.com/goods-158792.html">Sweatshirt</a></h3>
+            <strong class="price">$27.50 USD est.</strong>
+            <p>Use the flat chest width and sleeve length from a sweatshirt you already own as a reference.</p>
+            <label hidden><input type="checkbox" aria-label="Shortlist Sweatshirt">Shortlist</label>
+          </article>
+
+          <article class="card" data-category="T-shirts" data-price="32.64">
+            <div class="category">T-shirts</div>
+            <h3><a href="https://cafans.com/goods-158200.html">Unisex Embroidered Oversized T-Shirt</a></h3>
+            <strong class="price">$32.64 USD est.</strong>
+            <p>Compare the body length and shoulder width. If QC photos are available, check the embroidery placement.</p>
+            <label hidden><input type="checkbox" aria-label="Shortlist Unisex Embroidered Oversized T-Shirt">Shortlist</label>
+          </article>
+
+          <article class="card" data-category="Jackets" data-price="42.78">
+            <div class="category">Jackets</div>
+            <h3><a href="https://cafans.com/goods-158279.html">Corteiz Jacket</a></h3>
+            <strong class="price">$42.78 USD est.</strong>
+            <p>Allow room for your usual layers and check the fastenings in any available QC photos.</p>
+            <label hidden><input type="checkbox" aria-label="Shortlist Corteiz Jacket">Shortlist</label>
+          </article>
+        </div>
+
+        <p id="no-results" role="status" hidden>No listings match this search.</p>
+
+        <div class="actions shortlist" id="shortlist-tools" hidden>
+          <button id="download" type="button" disabled>Download shortlist CSV</button>
+          <button id="use-subtotal" type="button" disabled>Use shortlist subtotal</button>
+          <output id="shortlist-total" aria-live="polite">0 selected</output>
+        </div>
+      </section>
+
+      <section id="budget" class="panel" aria-labelledby="budget-title">
+        <h2 id="budget-title">Estimate your total order cost</h2>
+        <p>Enter each amount in USD. For shipping, use a quote for your destination and the route’s billable weight.</p>
+        <form id="budget-form">
+          <div class="budget">
+            <label>Items
+              <input id="items" name="items" type="number" min="0" step="0.01" inputmode="decimal">
+            </label>
+            <label>Domestic shipping
+              <input name="domestic" type="number" min="0" step="0.01" inputmode="decimal">
+            </label>
+            <label>International shipping
+              <input name="international" type="number" min="0" step="0.01" inputmode="decimal">
+            </label>
+            <label>Fees and taxes
+              <input name="fees" type="number" min="0" step="0.01" inputmode="decimal">
+            </label>
+          </div>
+          <output id="estimate" aria-live="polite">Enter the costs you know to calculate an estimate.</output>
+        </form>
+      </section>
+
+      <section id="guide" aria-labelledby="guide-title">
+        <h2 id="guide-title">How to use the Sugargoo spreadsheet</h2>
+        <ol>
+          <li><strong>Save the exact listing and variant.</strong> Keep the product link, size, color and current price together. If you plan to use Sugargoo, confirm that the underlying seller link and variant are accepted before paying.</li>
+          <li><strong>Check size and photos.</strong> Compare measurements in the same units. When warehouse quality-control photos are available, match them against the variant you ordered and check any detail that would affect fit or use.</li>
+          <li><strong>Compare shipping quotes.</strong> Record the destination, route and quoted billable weight. Bulky packaging can affect rates on routes that use volumetric weight. Add the fees and taxes you expect to pay.</li>
+        </ol>
+
+        <h2>Frequently asked questions</h2>
+        <details>
+          <summary>Where do the product links go?</summary>
+          <p>The product names open individual CAFANS listings. Both buttons at the top open the CAFANS homepage. Check agent availability and order terms on the product page before proceeding.</p>
+        </details>
+        <details>
+          <summary>How can I compare different sizes or colors?</summary>
+          <p>Download the shortlist CSV, add a separate row for each variant, and record its measurements and current price. The CSV includes columns for variant, sizing notes and QC notes.</p>
+        </details>
+        <details>
+          <summary>Does the catalog price include shipping?</summary>
+          <p>Each displayed figure is an estimated item price. Enter domestic and international shipping, fees and taxes separately to see an estimated order total.</p>
+        </details>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">Product listings and reference prices sourced from <a href="https://cafans.com">CAFANS</a>. Independent shopping guide.</div>
+  </footer>
+
+  <script>
+    (() => {
+      const cards = Array.from(document.querySelectorAll('.card'));
+      const query = document.getElementById('query');
+      const category = document.getElementById('category');
+      const noResults = document.getElementById('no-results');
+      const download = document.getElementById('download');
+      const useSubtotal = document.getElementById('use-subtotal');
+      const shortlistTotal = document.getElementById('shortlist-total');
+      const form = document.getElementById('budget-form');
+      const estimate = document.getElementById('estimate');
+      const items = document.getElementById('items');
+      const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+
+      const selectedCards = () => cards.filter(card => card.querySelector('input').checked);
+      const subtotal = selection => selection.reduce((sum, card) => sum + Number(card.dataset.price), 0);
+
+      function filterCards() {
+        const search = query.value.trim().toLowerCase();
+        for (const card of cards) {
+          const name = card.querySelector('h3').textContent.toLowerCase();
+          const matchesCategory = !category.value || category.value === card.dataset.category;
+          card.hidden = !matchesCategory || !name.includes(search);
+        }
+        noResults.hidden = cards.some(card => !card.hidden);
+      }
+
+      function updateShortlist() {
+        const selection = selectedCards();
+        const count = selection.length;
+        download.disabled = useSubtotal.disabled = count === 0;
+        shortlistTotal.textContent = count
+          ? `${count} selected · ${money.format(subtotal(selection))} estimated item subtotal`
+          : '0 selected';
+      }
+
+      function updateBudget() {
+        const fields = Array.from(form.querySelectorAll('input'));
+        if (fields.some(field => !field.validity.valid)) {
+          estimate.textContent = 'Enter non-negative amounts with up to two decimal places.';
+          return;
+        }
+        const filled = fields.filter(field => field.value !== '');
+        const total = filled.reduce((sum, field) => sum + field.valueAsNumber, 0);
+        estimate.textContent = filled.length
+          ? `Estimated total for entered costs ${money.format(total)} USD`
+          : 'Enter the costs you know to calculate an estimate.';
+      }
+
+      function downloadCsv() {
+        const rows = [['Product', 'Category', 'Estimated item price (USD)', 'Listing URL', 'Variant', 'Sizing notes', 'QC notes']];
+        for (const card of selectedCards()) {
+          const link = card.querySelector('h3 a');
+          rows.push([link.textContent, card.dataset.category, card.dataset.price, link.href, '', '', '']);
+        }
+        const csv = rows.map(row => row.map(value => `"${value.replace(/"/g, '""')}"`).join(',')).join('\r\n');
+        const url = URL.createObjectURL(new Blob(['\uFEFF', csv], { type: 'text/csv;charset=utf-8' }));
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'sugargoo-spreadsheet-shortlist.csv';
+        document.body.append(link);
+        link.click();
+        link.remove();
+        window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+
+      query.addEventListener('input', filterCards);
+      category.addEventListener('change', filterCards);
+      document.getElementById('products').addEventListener('change', updateShortlist);
+      form.addEventListener('input', updateBudget);
+      form.addEventListener('submit', event => event.preventDefault());
+      download.addEventListener('click', downloadCsv);
+      useSubtotal.addEventListener('click', () => {
+        items.value = subtotal(selectedCards()).toFixed(2);
+        updateBudget();
+        items.focus();
+      });
+
+      document.getElementById('filters').hidden = false;
+      document.getElementById('shortlist-tools').hidden = false;
+      for (const card of cards) card.querySelector('label').hidden = false;
+      filterCards();
+      updateShortlist();
+      updateBudget();
+    })();
+  </script>
+</body>
+</html>
